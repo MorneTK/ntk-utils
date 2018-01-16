@@ -31,10 +31,18 @@
     Results {{resultCount()}}
 
     <span class='right' *ngIf='this.results.length > 0'>
-      {{ totalLinks }} links searched
+      {{ totalLinks }} posts searched
     </span>
   </h2>
   <div class='please-wait' *ngIf='searching'>{{ searchText }}</div>
+  <div class='long-wait' *ngIf='longWait'>
+    Is it taking a long time to load?  I'm sorry.<br />
+    I cache the text for the individual posts for<br />
+    one week, after which they expire.<br /><br />
+    When they're not cached, it takes a long time<br />
+    to load all those links!<br /><br />
+    Please be patient.  It should load soon!
+  </div>
   <div class='no-results' *ngIf='noResults'>No results matched the search criteria.</div>
   <ul *ngIf='results.length > 0'>
     <li *ngFor='let result of results; let idx = index;'>

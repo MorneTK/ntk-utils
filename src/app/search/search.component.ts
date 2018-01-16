@@ -13,6 +13,7 @@ export class SearchComponent implements OnInit {
   terms: string[] = [];
   links: ILink[] = [];
   searching: boolean = false;
+  longWait: boolean = false;
   currentBoardLink: string;
   currentBoardText: string;
   noResults: boolean = false;
@@ -20,6 +21,7 @@ export class SearchComponent implements OnInit {
   totalLinks: number;
   searchText: string = 'Searching';
   searchTextIteration: number = 0;
+  searchTimerCycles: number = 0;
 
   constructor(private _data: DataService, private _http: HttpClient ) {}
 
@@ -46,8 +48,13 @@ export class SearchComponent implements OnInit {
   searchingTick = () => {
     this.searchTextIteration++;
     if ( this.searchTextIteration === 4 ) {
+      this.searchTimerCycles++;
       this.searchTextIteration = 0;
       this.searchText = 'Searching';
+
+      if ( this.searchTimerCycles >= 6 ) {
+        this.longWait = true;
+      }
     } else {
       this.searchText += '.';
     }
@@ -55,12 +62,15 @@ export class SearchComponent implements OnInit {
 
   doSearch() {
     this.results = [];
+    this.noResults = false;
+    this.longWait  = false;
     this.searching = true;
     const interval = setInterval( this.searchingTick, 500 );
 
     const endpoint = `/api/search?baseLink=${this.currentBoardLink}&terms=${ this.terms.join( ',' )}`;
     this._http.get( endpoint ).subscribe(( data: any ) => {
       this.searching = false;
+      this.longWait  = false;
       clearInterval( interval );
       this.searchText = 'Searching';
 

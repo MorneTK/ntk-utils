@@ -112,7 +112,12 @@ $header: #343239;
   }
 
   .no-results { text-align: center; }
-  .please-wait { margin-left: 250px; }
+  .please-wait { margin-left: 250px; font-weight: bold; }
+  .long-wait {
+    margin-left: 150px;
+    font-weight: normal;
+    color: $dark;
+  }
 
   ul {
     color: $light-font;

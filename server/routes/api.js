@@ -19,9 +19,6 @@ async function doSearch( req ) {
   const terms  = escapeTerms( params.terms );
   const regex  = new RegExp( `(${terms})`, 'i' );
 
-  console.log( `Searching: ${params.baseLink}` );
-  console.log( `RegExp: ${regex}` );
-
   try {
     for( let i = 0; i < 10; i++ ) {
       const parentLink = `${params.baseLink}/index${ i > 0 ? i : '' }.html`;
