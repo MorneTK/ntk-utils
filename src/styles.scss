@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+$dark: #1C2321;
+$light-font: #E3E1E3;
+$light-bg: #666564;
+$header: #343239;
+
+body {
+	background: $dark;
+	padding: 3em;
+	font-family: 'Arial', 'Helvetica', 'sans-serif';
+	color: $light-font;
+  overflow-x: hidden;
+
+  .credit {
+    position: absolute;
+    text-align: center;
+    width: 95%;
+    bottom: 5px;
+    font-size: 0.8em;
+  }
+}

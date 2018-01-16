@@ -1,0 +1,39 @@
+<div class='search-tools'>
+  <h2>Search Parameters</h2>
+  <div class='board'>
+    <h3>Board</h3>
+    <select name='boardSearch' [value]='board' (change)='onBoardChange( boardSearch.value )' #boardSearch>
+      <option value=''>Which board?</option>
+      <option *ngFor='let link of links' value='{{ link.key }}'>{{ link.text }}</option>
+    </select>
+  </div>
+  <div class='terms'>
+    <h3>Search Terms</h3>
+    <textarea name='rawTerms' (keyup)='termsUpdated( rawTerms.value )' #rawTerms placeholder='Separate terms with commas'></textarea>
+  </div>
+  <button name='search' (click)='doSearch()' disabled={{buttonDisabled()}}>Search!</button>
+</div>
+
+<div class='search-preview'>
+  <h2>Terms Preview</h2>
+  <div class='no-terms' *ngIf='terms.length === 0'>No terms entered</div>
+  <ul class='terms' *ngIf='terms.length > 0'>
+    <li class='term' *ngFor='let term of terms'>{{ term }}</li>
+  </ul>
+</div>
+
+<div class='search-results' *ngIf='results.length > 0 || noResults'>
+  <h2>
+    Results {{resultCount()}}
+
+    <span class='right' *ngIf='!this.noResults'>
+      {{ totalLinks }} links searched
+    </span>
+  </h2>
+  <div class='no-results' *ngIf='noResults'>No results matched the search criteria.</div>
+  <ul>
+    <li *ngFor='let result of results'>
+      <a href={{result}} target='_blank'>{{ result }}</a>
+    </li>
+  </ul>
+</div>
