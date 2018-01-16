@@ -86,8 +86,15 @@ $header: #343239;
   }
 }
 
+.credit {
+  margin: 10px 0;
+  text-align: center;
+  font-size: 0.8em;
+  width: 607px;
+}
+
 .search-results {
-  margin-top: 20px;
+  margin-top: 10px;
   width: 607px;
   padding-bottom: 10px;
 
@@ -97,16 +104,31 @@ $header: #343239;
     font-size: 0.5em;
   }
 
-  .no-results {
+  .no-results, .please-wait {
     font-size: 1.2em;
-    text-align: center;
     margin-top: 20px;
+    margin-bottom: 8px;
     color: $dark;
   }
+
+  .no-results { text-align: center; }
+  .please-wait { margin-left: 250px; }
 
   ul {
     color: $light-font;
     font-weight: bold;
+    padding-left: 20px;
+
+    li {
+      list-style-type: none;
+    }
+
+    span {
+      font-size: 0.8em;
+      font-weight: normal;
+      cursor: pointer;
+      &:hover { color: $dark; }
+    }
 
     a {
       text-decoration: none;

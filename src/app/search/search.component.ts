@@ -18,12 +18,13 @@ export class SearchComponent implements OnInit {
   noResults: boolean = false;
   results: string[] = [];
   totalLinks: number;
+  searchText: string = 'Searching';
+  searchTextIteration: number = 0;
 
   constructor(private _data: DataService, private _http: HttpClient ) {}
 
   ngOnInit() {
     this._data.links.subscribe(( res: Array<ILink> ) => this.links = res );
-    this._data.searching.subscribe(( res: boolean ) => this.searching = res );
   }
 
   onBoardChange( value: string ) {
@@ -42,9 +43,27 @@ export class SearchComponent implements OnInit {
     this.terms = rawTerms.map(( term ) => term.trim() ).filter(( term ) => term.length > 0 );
   }
 
+  searchingTick = () => {
+    this.searchTextIteration++;
+    if ( this.searchTextIteration === 4 ) {
+      this.searchTextIteration = 0;
+      this.searchText = 'Searching';
+    } else {
+      this.searchText += '.';
+    }
+  }
+
   doSearch() {
-    const endpoint = `/api/search?baseLink=${this.currentBoardLink}&terms=${ this.terms.join( '|' )}`;
+    this.results = [];
+    this.searching = true;
+    const interval = setInterval( this.searchingTick, 500 );
+
+    const endpoint = `/api/search?baseLink=${this.currentBoardLink}&terms=${ this.terms.join( ',' )}`;
     this._http.get( endpoint ).subscribe(( data: any ) => {
+      this.searching = false;
+      clearInterval( interval );
+      this.searchText = 'Searching';
+
       this.results    = data.uLinks;
       this.totalLinks = data.totalLinks;
       this.noResults  = data.uLinks.length === 0;
@@ -59,7 +78,12 @@ export class SearchComponent implements OnInit {
   }
 
   resultCount(): string {
-    if ( this.noResults ) { return ''; }
+    if ( this.results.length === 0 ) { return ''; }
     return ` (${this.results.length})`;
+  }
+
+  removeLink( idx ): boolean {
+    this.results.splice( idx, 1 );
+    return false;
   }
 }

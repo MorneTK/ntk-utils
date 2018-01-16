@@ -5,10 +5,10 @@ const request   = require( 'request-promise' );
 const cheerio   = require( 'cheerio' );
 const redis     = require( 'redis' );
 const rdsClient = redis.createClient();
+const expireIn  = 604800;
 
 router.get( '/search', async ( req, res ) => {
   const data = await doSearch( req );
-  console.log( data.totalLinks );
   res.json( data );
 });
 
@@ -16,12 +16,14 @@ async function doSearch( req ) {
   let totalLinks = 0;
   const params = getParams( req );
   const uLinks = [];
-  const regex  = new RegExp( `(${params.terms})`, 'i' );
+  const terms  = escapeTerms( params.terms );
+  const regex  = new RegExp( `(${terms})`, 'i' );
 
-  console.log( `Searching with: ${regex}` );
+  console.log( `Searching: ${params.baseLink}` );
+  console.log( `RegExp: ${regex}` );
 
   try {
-    for( let i = 0; i < 20; i++ ) {
+    for( let i = 0; i < 10; i++ ) {
       const parentLink = `${params.baseLink}/index${ i > 0 ? i : '' }.html`;
       const loadedHtml = await fetchHtml( parentLink, true );
       const allLinks   = getLinksOnPage( loadedHtml );
@@ -34,16 +36,18 @@ async function doSearch( req ) {
         if ( !linkHtml || linkHtml.length === 0 ) {
           linkHtml = await fetchHtml( link );
           rdsClient.set( link, linkHtml );
+          rdsClient.expire( link, expireIn );
         }
 
-        if ( regex.test( linkHtml ) ) { uLinks.push( link ); }
+        const $ = cheerio.load( linkHtml );
+        const body = $( 'body' ).html();
+
+        if ( regex.test( body ) ) { uLinks.push( link ); }
       }
     }
   } catch( ex ) {
-    // no-op
+    // no-op -- expecting this to 404 after the last page is reached
   }
-
-  console.log( `Relevant Link count: ${uLinks.length}` );
 
   return { uLinks: uLinks, totalLinks: totalLinks };
 }
@@ -83,6 +87,35 @@ async function getFromRedis( key ) {
       }
     });
   });
+}
+
+function escapeTerms( terms ) {
+  const termsArray = terms.split( /,/ );
+  const newTerms = []
+
+  for ( const idx in termsArray ) {
+    let newTerm = termsArray[idx];
+    newTerm = newTerm.replace( /\\/g, "\\\\" );
+    newTerm = newTerm.replace( /\[/g, "\\[" );
+    newTerm = newTerm.replace( /\]/g, "\\]" );
+    newTerm = newTerm.replace( /\(/g, "\\(" );
+    newTerm = newTerm.replace( /\)/g, "\\)" );
+    newTerm = newTerm.replace( /\*/g, "\\*" );
+    newTerm = newTerm.replace( /\//g, "\\/" );
+    newTerm = newTerm.replace( /\./g, "\\." );
+    newTerm = newTerm.replace( /\|/g, "\\|" );
+    newTerm = newTerm.replace( /\?/g, "\\?" );
+    newTerm = newTerm.replace( /\+/g, "\\+" );
+    newTerm = newTerm.replace( /\-/g, "\\-" );
+    newTerm = newTerm.replace( /\{/g, "\\{" );
+    newTerm = newTerm.replace( /\}/g, "\\}" );
+    newTerm = newTerm.replace( /\^/g, "\\^" );
+    newTerm = newTerm.replace( /\>/g, "\\>" );
+    newTerm = newTerm.replace( /\</g, "\\<" );
+    newTerms.push( newTerm );
+  }
+
+  return newTerms.join( '|' );
 }
 
 module.exports = router;

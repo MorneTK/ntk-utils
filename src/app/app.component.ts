@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from './data.service';
 
 @Component({
   selector: 'app-root',
@@ -7,12 +6,7 @@ import { DataService } from './data.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  searching: boolean = false;
-  results: Array<string> = [];
+  constructor() {}
 
-  constructor( private _data: DataService ) {}
-
-  ngOnInit() {
-    this._data.searching.subscribe(( res: boolean ) => this.searching = res );
-  }
+  ngOnInit() {}
 }

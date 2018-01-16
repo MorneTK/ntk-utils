@@ -22,17 +22,23 @@
   </ul>
 </div>
 
-<div class='search-results' *ngIf='results.length > 0 || noResults'>
+<div class='credit'>
+  <span title='Please for the love of god find me a web designer!'>Designed (lel)</span> and coded by <span title='Not my real name'>Morne Falconsbane</span> (NTK)
+</div>
+
+<div class='search-results' *ngIf='searching || results.length > 0 || noResults'>
   <h2>
     Results {{resultCount()}}
 
-    <span class='right' *ngIf='!this.noResults'>
+    <span class='right' *ngIf='this.results.length > 0'>
       {{ totalLinks }} links searched
     </span>
   </h2>
+  <div class='please-wait' *ngIf='searching'>{{ searchText }}</div>
   <div class='no-results' *ngIf='noResults'>No results matched the search criteria.</div>
-  <ul>
-    <li *ngFor='let result of results'>
+  <ul *ngIf='results.length > 0'>
+    <li *ngFor='let result of results; let idx = index;'>
+      <span href='#' (click)='removeLink(idx)'>x</span>
       <a href={{result}} target='_blank'>{{ result }}</a>
     </li>
   </ul>

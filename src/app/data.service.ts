@@ -4,10 +4,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class DataService {
-  private amSearching = new BehaviorSubject<boolean>( false );
-  private boardLinks  = new BehaviorSubject<ILink[]>( [] );
-  searching = this.amSearching.asObservable();
-  links     = this.boardLinks.asObservable();
+  private boardLinks = new BehaviorSubject<ILink[]>( [] );
+  links = this.boardLinks.asObservable();
 
 
   constructor() {
@@ -21,6 +19,7 @@ export class DataService {
     this.boardLinks.value.push({ key: 'dweaver', link: 'http://boards.nexustk.com/DreamWeaver', text: 'Dream Weaver' } );
     this.boardLinks.value.push({ key: 'poems', link: 'http://boards.nexustk.com/Poetry', text: 'Poetry' } );
     this.boardLinks.value.push({ key: 'story', link: 'http://boards.nexustk.com/Story', text: 'Story Contest' } );
+    this.boardLinks.value.push({ key: 'cotw', link: 'http://boards.nexustk.com/Chronicles', text: 'Chronicles of the Winds' });
   }
 
 }
